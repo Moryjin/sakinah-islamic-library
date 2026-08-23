@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform } from "react-native";
@@ -13,6 +14,10 @@ import { SakinahStoreProvider } from "@/lib/sakinah-store";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { trpc, createTRPCClient } from "@/lib/trpc";
+import { SakinahSplash } from "@/components/sakinah-splash";
+
+SplashScreen.preventAutoHideAsync().catch(() => undefined);
+SplashScreen.setOptions({ duration: 450, fade: true });
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -26,8 +31,14 @@ export default function RootLayout() {
   const [frame, setFrame] = useState<Rect>(initialFrame);
   const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: false, retry: 1 } } }));
   const [trpcClient] = useState(() => createTRPCClient());
+  const [showBrandSplash, setShowBrandSplash] = useState(true);
 
   useEffect(() => { initManusRuntime(); }, []);
+  useEffect(() => {
+    SplashScreen.hideAsync().catch(() => undefined);
+    const timer = setTimeout(() => setShowBrandSplash(false), 1150);
+    return () => clearTimeout(timer);
+  }, []);
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => { setInsets(metrics.insets); setFrame(metrics.frame); }, []);
   useEffect(() => {
     if (Platform.OS !== "web") return;
@@ -44,12 +55,15 @@ export default function RootLayout() {
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <SakinahStoreProvider>
-            <Stack screenOptions={{ headerShown: false }}>
+            <Stack screenOptions={{ headerShown: false, animation: "fade_from_bottom", animationDuration: 240 }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="reader/[id]" />
+              <Stack.Screen name="section/[kind]" />
+              <Stack.Screen name="methodology" />
               <Stack.Screen name="oauth/callback" />
             </Stack>
             <StatusBar style="auto" />
+            {showBrandSplash ? <SakinahSplash /> : null}
           </SakinahStoreProvider>
         </QueryClientProvider>
       </trpc.Provider>

@@ -12,6 +12,7 @@ const MAPPING = {
   "quote.bubble.fill": "format-quote",
   "magnifyingglass": "search",
   "bookmark.fill": "bookmark",
+  "sun.max.fill": "wb-sunny",
   "chevron.right": "chevron-right",
 } as IconMapping;
 

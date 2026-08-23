@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FlatList, Pressable as TouchableOpacity, Text, View } from "react-native";
 
 import { AppHeader, LibraryItemCard, SectionTitle } from "@/components/sakinah-ui";
-import { collectionMeta, libraryItems, type LibraryKind } from "@/data/sakinah-library";
+import { collectionMeta, verifiedLibraryItems, type LibraryKind } from "@/data/sakinah-library";
 import { useColors } from "@/hooks/use-colors";
 import { ScreenContainer } from "@/components/screen-container";
 
@@ -13,7 +13,7 @@ export default function HadithScreen() {
   const [selected, setSelected] = useState<LibraryKind>("bukhari");
   const colors = useColors();
   const meta = collectionMeta[selected];
-  const items = libraryItems.filter((item) => item.kind === selected);
+  const items = verifiedLibraryItems.filter((item) => item.kind === selected);
 
   return (
     <ScreenContainer className="px-5">

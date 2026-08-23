@@ -16,9 +16,9 @@ export default function TabLayout() {
       <Tabs.Screen name="index" options={{ title: "الرئيسية", tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} /> }} />
       <Tabs.Screen name="library" options={{ title: "المكتبة", tabBarIcon: ({ color }) => <IconSymbol size={24} name="book.closed.fill" color={color} /> }} />
       <Tabs.Screen name="hadith" options={{ title: "الحديث", tabBarIcon: ({ color }) => <IconSymbol size={24} name="quote.bubble.fill" color={color} /> }} />
+      <Tabs.Screen name="adhkar" options={{ title: "الأذكار", tabBarIcon: ({ color }) => <IconSymbol size={24} name="sun.max.fill" color={color} /> }} />
       <Tabs.Screen name="search" options={{ title: "بحث", tabBarIcon: ({ color }) => <IconSymbol size={24} name="magnifyingglass" color={color} /> }} />
       <Tabs.Screen name="saved" options={{ title: "المحفوظات", tabBarIcon: ({ color }) => <IconSymbol size={24} name="bookmark.fill" color={color} /> }} />
     </Tabs>
   );
 }
-

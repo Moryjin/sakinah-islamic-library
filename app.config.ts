@@ -44,7 +44,7 @@ const config: ExpoConfig = {
     permissions: ["POST_NOTIFICATIONS"],
   },
   web: { bundler: "metro", output: "static", favicon: "./assets/images/favicon.png" },
-  plugins: ["expo-router", "expo-audio", "expo-video", ["expo-splash-screen", { image: "./assets/images/splash-icon.png", imageWidth: 200, resizeMode: "contain", backgroundColor: "#0F5B4C", dark: { backgroundColor: "#10211F" } }], ["expo-build-properties", { android: { buildArchs: ["armeabi-v7a", "arm64-v8a"], minSdkVersion: 24 } }]],
+  plugins: ["expo-router", "expo-audio", "expo-video", ["expo-notifications", { color: "#0F5B4C", defaultChannel: "sakinah-reminders" }], ["expo-splash-screen", { image: "./assets/images/splash-icon.png", imageWidth: 200, resizeMode: "contain", backgroundColor: "#0F5B4C", dark: { backgroundColor: "#10211F" } }], ["expo-build-properties", { android: { buildArchs: ["armeabi-v7a", "arm64-v8a"], minSdkVersion: 24 } }]],
   experiments: { typedRoutes: true, reactCompiler: true },
 };
 

@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { FlatList, TextInput, View } from "react-native";
 
 import { AppHeader, EmptyState, LibraryItemCard, SectionTitle } from "@/components/sakinah-ui";
-import { libraryItems } from "@/data/sakinah-library";
+import { verifiedLibraryItems } from "@/data/sakinah-library";
 import { useColors } from "@/hooks/use-colors";
 import { ScreenContainer } from "@/components/screen-container";
 
@@ -13,7 +13,7 @@ export default function SearchScreen() {
   const results = useMemo(() => {
     const normalized = query.trim();
     if (!normalized) return [];
-    return libraryItems.filter((item) => `${item.title} ${item.subtitle} ${item.excerpt} ${item.tags.join(" ")}`.includes(normalized));
+    return verifiedLibraryItems.filter((item) => `${item.title} ${item.subtitle} ${item.excerpt} ${item.tags.join(" ")}`.includes(normalized));
   }, [query]);
 
   return (

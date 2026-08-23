@@ -1,24 +1,31 @@
 import { describe, expect, it } from "vitest";
 
-import { collectionMeta, libraryItems, sourceDirectory } from "../data/sakinah-library";
+import { allowedSourceHosts, hasCompleteCitation, libraryItems, sectionMeta, sourceDirectory, verifiedLibraryItems } from "../data/sakinah-library";
 
 describe("بيانات مكتبة سَكينة", () => {
-  it("تغطي الأقسام الإسلامية الأربعة المطلوبة", () => {
-    expect(Object.keys(collectionMeta).sort()).toEqual(["bidaya", "bukhari", "muslim", "quran"]);
-    expect(new Set(libraryItems.map((item) => item.kind))).toEqual(new Set(["quran", "bukhari", "muslim", "bidaya"]));
+  it("تتضمن الأبواب المستقلة التي يقوم عليها التطبيق", () => {
+    expect(Object.keys(sectionMeta)).toEqual(expect.arrayContaining(["quran", "qiraat", "tafsir", "bukhari", "muslim", "adhkar", "daily-ward", "bidaya", "ibn-taymiyyah", "nawawi", "ibn-baz", "fatwa", "hanafi", "maliki", "shafii", "hanbali", "tawhid"]));
   });
 
-  it("يربط كل نص بمرجع ورابط آمن قابل للرجوع", () => {
-    for (const item of libraryItems) {
-      expect(item.source.label.trim()).not.toBe("");
-      expect(item.source.reference.trim()).not.toBe("");
-      expect(item.source.site.trim()).not.toBe("");
-      expect(item.source.url).toMatch(/^https:\/\//);
+  it("لا يسمح بعرض أي مادة لا تحقق بطاقة التوثيق الإلزامية", () => {
+    expect(verifiedLibraryItems).toHaveLength(libraryItems.length);
+    for (const item of libraryItems) expect(hasCompleteCitation(item)).toBe(true);
+  });
+
+  it("يكمل كل حديث ظاهر السند والمصدر والتخريج والدرجة", () => {
+    const hadithItems = libraryItems.filter((item) => item.hadith);
+    expect(hadithItems.length).toBeGreaterThan(0);
+    for (const item of hadithItems) {
+      expect(item.hadith?.isnad.trim()).not.toBe("");
+      expect(item.hadith?.grade.trim()).not.toBe("");
+      expect(item.hadith?.takhrij.trim()).not.toBe("");
+      expect(item.hadith?.isnadUrl).toMatch(/^https:\/\//);
     }
   });
 
-  it("يحصر قائمة المصادر الموثوقة في نطاقات مرجعية صريحة", () => {
+  it("يحصر قائمة المصادر في نطاقات مسموحة وصريحة", () => {
     const domains = sourceDirectory.map((source) => new URL(source.url).hostname);
-    expect(domains).toEqual(expect.arrayContaining(["qurancomplex.gov.sa", "quran.ksu.edu.sa", "dorar.net", "shamela.ws"]));
+    expect(domains).toEqual(expect.arrayContaining(["qurancomplex.gov.sa", "quran.ksu.edu.sa", "dorar.net", "shamela.ws", "binbaz.org.sa"]));
+    for (const item of libraryItems) expect(allowedSourceHosts).toContain(new URL(item.source.url).hostname);
   });
 });
