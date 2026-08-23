@@ -28,4 +28,15 @@ describe("بيانات مكتبة سَكينة", () => {
     expect(domains).toEqual(expect.arrayContaining(["qurancomplex.gov.sa", "quran.ksu.edu.sa", "dorar.net", "shamela.ws", "binbaz.org.sa"]));
     for (const item of libraryItems) expect(allowedSourceHosts).toContain(new URL(item.source.url).hostname);
   });
+
+  it("لا يقبل التلاوة إلا مع المصدر والترخيص والرابط الصوتي", () => {
+    const recordings = libraryItems.flatMap((item) => item.recitations ?? []);
+    expect(recordings.length).toBeGreaterThan(0);
+    for (const recording of recordings) {
+      expect(recording.license.trim()).not.toBe("");
+      expect(recording.sourcePage).toMatch(/^https:\/\//);
+      expect(recording.audioUrl).toMatch(/^https:\/\//);
+      expect(recording.licenseUrl).toMatch(/^https:\/\//);
+    }
+  });
 });

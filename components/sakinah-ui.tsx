@@ -6,11 +6,17 @@ import { collectionMeta, type LibraryItem } from "@/data/sakinah-library";
 import { useColors } from "@/hooks/use-colors";
 import { useSakinahStore } from "@/lib/sakinah-store";
 import { useThemeContext } from "@/lib/theme-provider";
+import { trustedUrlOrNull } from "@/lib/security";
 
 const rtl = { textAlign: "right" as const, writingDirection: "rtl" as const };
 
 export function openSource(url: string) {
-  Linking.openURL(url).catch(() => Alert.alert("تعذر فتح المصدر", "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى."));
+  const trustedUrl = trustedUrlOrNull(url);
+  if (!trustedUrl) {
+    Alert.alert("رابط غير موثوق", "تمنع سياسة سَكينة فتح الروابط التي لا تستخدم HTTPS أو لا تنتمي إلى مصدر معتمد.");
+    return;
+  }
+  Linking.openURL(trustedUrl).catch(() => Alert.alert("تعذر فتح المصدر", "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى."));
 }
 
 export function AppHeader({ title, subtitle }: { title: string; subtitle?: string }) {

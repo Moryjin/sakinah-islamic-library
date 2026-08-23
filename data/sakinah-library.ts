@@ -67,6 +67,18 @@ export type ReminderMeta = {
   repetitions: string;
 };
 
+export type RecitationMeta = {
+  title: string;
+  reciter: string;
+  riwayah: string;
+  publisher: string;
+  license: string;
+  licenseUrl: string;
+  sourcePage: string;
+  audioUrl: string;
+  note: string;
+};
+
 export type LibraryItem = {
   id: string;
   kind: LibraryKind;
@@ -81,6 +93,7 @@ export type LibraryItem = {
   book?: BookMeta;
   qiraat?: QiraatMeta;
   reminder?: ReminderMeta;
+  recitations?: RecitationMeta[];
 };
 
 export const sourceDirectory = [
@@ -91,6 +104,7 @@ export const sourceDirectory = [
   { id: "sunnah", name: "نصوص الأسانيد في دواوين الحديث", scope: "السند العربي والموضع في الصحيحين", url: "https://sunnah.com/", icon: "account-tree", allowed: true },
   { id: "shamela", name: "المكتبة الشاملة", scope: "الكتب التراثية وبيانات الطبعات والفهارس", url: "https://shamela.ws/", icon: "account-balance", allowed: true },
   { id: "binbaz", name: "الموقع الرسمي للشيخ ابن باز", scope: "المؤلفات والفتاوى المنسوبة للشيخ", url: "https://binbaz.org.sa/", icon: "library-books", allowed: true },
+  { id: "commons-audio", name: "ويكيميديا كومنز", scope: "ملفات تلاوة برخص ظاهرة في صفحة الملف", url: "https://commons.wikimedia.org/", icon: "volume-up", allowed: true },
 ] as const;
 
 export const allowedSourceHosts = sourceDirectory.map((source) => new URL(source.url).hostname);
@@ -127,6 +141,10 @@ export const libraryItems: LibraryItem[] = [
     body: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nالْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ\nالرَّحْمَٰنِ الرَّحِيمِ\nمَالِكِ يَوْمِ الدِّينِ\nإِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ\nاهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ\nصِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
     source: { label: "القرآن الكريم", reference: "سورة الفاتحة، الآيات ١–٧", url: "https://qurancomplex.gov.sa/", site: "مجمع الملك فهد لطباعة المصحف الشريف", note: "النص القرآني موثق باسم السورة وأرقام الآيات." },
     tags: ["القرآن", "الفاتحة", "صلاة"],
+    recitations: [
+      { title: "تلاوة سورة الفاتحة", reciter: "لم يُذكر قارئ محدد في صفحة المصدر", riwayah: "لم تُذكر في صفحة المصدر", publisher: "Ibrahimmusa4 عبر ويكيميديا كومنز", license: "CC0 1.0 · ملكية عامة مكرسة", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:AlF%C4%81tihatulKit%C4%81b.ogg", audioUrl: "https://commons.wikimedia.org/wiki/Special:Redirect/file/AlF%C4%81tihatulKit%C4%81b.ogg", note: "تعرض البطاقة اسم الناشر كما ورد، ولا تنسب التسجيل إلى قارئ محدد بلا تصريح في المصدر." },
+      { title: "الفاتحة بأسلوب قراءة حمزة الكوفي", reciter: "أسلوب حمزة الكوفي بحسب وصف الملف", riwayah: "أسلوب قراءة حمزة الكوفي كما وصف المصدر", publisher: "PeaceSeekers عبر ويكيميديا كومنز", license: "CC0 1.0 · ملكية عامة مكرسة", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:Al_Fatiha_in_Hamzah_al-Kufi_qiraat_style_or_harf.ogg", audioUrl: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Al_Fatiha_in_Hamzah_al-Kufi_qiraat_style_or_harf.ogg", note: "صفحة الملف تصفه بأنه تلاوة الفاتحة بأسلوب حمزة الكوفي؛ لا تضاف رواية أو طريق أكثر تحديدًا من دون مرجع صريح." },
+    ],
   },
   {
     id: "tafsir-fatiha-saadi",
@@ -403,6 +421,7 @@ export function hasCompleteCitation(item: LibraryItem) {
   if (item.tafsir) return Boolean(item.tafsir.tafsirName && item.tafsir.scholar && item.tafsir.ayahRange && isAllowedSourceUrl(item.tafsir.tafsirUrl));
   if (item.book) return Boolean(item.book.author && item.book.edition && item.book.location);
   if (item.qiraat) return Boolean(item.qiraat.qari && item.qiraat.riwayah && item.qiraat.tariq && item.qiraat.locus && isAllowedSourceUrl(item.qiraat.qiraatSource));
+  if (item.recitations) return item.recitations.every((recording) => Boolean(recording.title && recording.reciter && recording.riwayah && recording.publisher && recording.license && recording.note && isAllowedSourceUrl(recording.sourcePage) && isAllowedSourceUrl(recording.audioUrl) && /^https:\/\/creativecommons\.org\//.test(recording.licenseUrl)));
   return true;
 }
 

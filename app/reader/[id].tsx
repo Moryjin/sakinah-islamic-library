@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 
 import { CitationCard } from "@/components/citation-card";
+import { RecitationPlayer } from "@/components/recitation-player";
 import { EmptyState } from "@/components/sakinah-ui";
 import { collectionMeta, hasCompleteCitation, libraryItems } from "@/data/sakinah-library";
 import { useColors } from "@/hooks/use-colors";
@@ -36,8 +37,8 @@ export default function ReaderScreen() {
         <View className="flex-row-reverse items-center justify-between mb-6"><Pressable onPress={() => router.back()} style={({ pressed }) => ({ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><MaterialIcons name="arrow-forward" size={21} color={colors.foreground} /></Pressable><View className="flex-1 mx-3"><Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "800", ...rtl }} numberOfLines={1}>{item.title}</Text><Text style={{ color: colors.muted, fontSize: 12, marginTop: 3, ...rtl }}>{item.subtitle}</Text></View><Pressable onPress={() => toggleFavorite(item.id)} style={({ pressed }) => ({ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><MaterialIcons name={saved ? "bookmark" : "bookmark-border"} size={21} color={saved ? colors.primary : colors.foreground} /></Pressable></View>
         <View style={{ backgroundColor: `${meta.color}15`, borderRadius: 18, padding: 13, marginBottom: 15 }}><Text style={{ color: meta.color, fontSize: 12, fontWeight: "800", ...rtl }}>{meta.title}</Text><Text style={{ color: colors.foreground, fontSize: 13, lineHeight: 21, marginTop: 4, ...rtl }}>{item.source.note}</Text></View>
         <CitationCard item={item} />
+        {item.recitations?.length ? <RecitationPlayer recitations={item.recitations} /> : null}
       </>} />
     </ScreenContainer>
   );
 }
-

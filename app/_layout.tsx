@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Platform } from "react-native";
+import { I18nManager, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaFrameContext, SafeAreaInsetsContext, SafeAreaProvider, initialWindowMetrics } from "react-native-safe-area-context";
 import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
@@ -15,9 +15,11 @@ import { ThemeProvider } from "@/lib/theme-provider";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { SakinahSplash } from "@/components/sakinah-splash";
+import { enforceRtlLayout, RTL_LANGUAGE_TAG, rtlRoot } from "@/lib/rtl";
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 SplashScreen.setOptions({ duration: 450, fade: true });
+enforceRtlLayout();
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -51,11 +53,12 @@ export default function RootLayout() {
   }, [initialInsets, initialFrame]);
 
   const content = (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={rtlRoot} nativeID={`sakinah-root-${RTL_LANGUAGE_TAG}-${I18nManager.isRTL ? "rtl" : "pending"}`}>
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <SakinahStoreProvider>
-            <Stack screenOptions={{ headerShown: false, animation: "fade_from_bottom", animationDuration: 240 }}>
+            <View style={rtlRoot} accessibilityLanguage={RTL_LANGUAGE_TAG}>
+            <Stack screenOptions={{ headerShown: false, animation: "fade_from_bottom", animationDuration: 240, gestureDirection: "horizontal", contentStyle: rtlRoot }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="reader/[id]" />
               <Stack.Screen name="section/[kind]" />
@@ -64,6 +67,7 @@ export default function RootLayout() {
             </Stack>
             <StatusBar style="auto" />
             {showBrandSplash ? <SakinahSplash /> : null}
+            </View>
           </SakinahStoreProvider>
         </QueryClientProvider>
       </trpc.Provider>

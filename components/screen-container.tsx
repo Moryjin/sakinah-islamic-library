@@ -2,6 +2,7 @@ import { View, type ViewProps } from "react-native";
 import { SafeAreaView, type Edge } from "react-native-safe-area-context";
 
 import { cn } from "@/lib/utils";
+import { rtlRoot } from "@/lib/rtl";
 
 export interface ScreenContainerProps extends ViewProps {
   /**
@@ -59,9 +60,9 @@ export function ScreenContainer({
       <SafeAreaView
         edges={edges}
         className={cn("flex-1", safeAreaClassName)}
-        style={style}
+        style={[rtlRoot, style]}
       >
-        <View className={cn("flex-1", className)}>{children}</View>
+        <View className={cn("flex-1", className)} style={rtlRoot}>{children}</View>
       </SafeAreaView>
     </View>
   );
