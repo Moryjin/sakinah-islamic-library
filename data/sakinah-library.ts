@@ -107,7 +107,9 @@ export const sourceDirectory = [
   { id: "commons-audio", name: "ويكيميديا كومنز", scope: "ملفات تلاوة برخص ظاهرة في صفحة الملف", url: "https://commons.wikimedia.org/", icon: "volume-up", allowed: true },
 ] as const;
 
-export const allowedSourceHosts = sourceDirectory.map((source) => new URL(source.url).hostname);
+// صفحة الملف في كومنز تبقى مرجع الترخيص، بينما يقدم upload.wikimedia.org
+// ملف الصوت النهائي عبر HTTPS بلا إعادة توجيه داخل المشغل.
+export const allowedSourceHosts = [...sourceDirectory.map((source) => new URL(source.url).hostname), "upload.wikimedia.org"];
 
 export const sectionMeta: Record<LibraryKind, { title: string; shortTitle: string; color: string; icon: string; description: string }> = {
   quran: { title: "القرآن الكريم", shortTitle: "القرآن", color: "#0F5B4C", icon: "menu-book", description: "نص الآية ورقمها ومصدر المصحف." },
@@ -142,8 +144,8 @@ export const libraryItems: LibraryItem[] = [
     source: { label: "القرآن الكريم", reference: "سورة الفاتحة، الآيات ١–٧", url: "https://qurancomplex.gov.sa/", site: "مجمع الملك فهد لطباعة المصحف الشريف", note: "النص القرآني موثق باسم السورة وأرقام الآيات." },
     tags: ["القرآن", "الفاتحة", "صلاة"],
     recitations: [
-      { title: "تلاوة سورة الفاتحة", reciter: "لم يُذكر قارئ محدد في صفحة المصدر", riwayah: "لم تُذكر في صفحة المصدر", publisher: "Ibrahimmusa4 عبر ويكيميديا كومنز", license: "CC0 1.0 · ملكية عامة مكرسة", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:AlF%C4%81tihatulKit%C4%81b.ogg", audioUrl: "https://commons.wikimedia.org/wiki/Special:Redirect/file/AlF%C4%81tihatulKit%C4%81b.ogg", note: "تعرض البطاقة اسم الناشر كما ورد، ولا تنسب التسجيل إلى قارئ محدد بلا تصريح في المصدر." },
-      { title: "الفاتحة بأسلوب قراءة حمزة الكوفي", reciter: "أسلوب حمزة الكوفي بحسب وصف الملف", riwayah: "أسلوب قراءة حمزة الكوفي كما وصف المصدر", publisher: "PeaceSeekers عبر ويكيميديا كومنز", license: "CC0 1.0 · ملكية عامة مكرسة", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:Al_Fatiha_in_Hamzah_al-Kufi_qiraat_style_or_harf.ogg", audioUrl: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Al_Fatiha_in_Hamzah_al-Kufi_qiraat_style_or_harf.ogg", note: "صفحة الملف تصفه بأنه تلاوة الفاتحة بأسلوب حمزة الكوفي؛ لا تضاف رواية أو طريق أكثر تحديدًا من دون مرجع صريح." },
+      { title: "تلاوة سورة الفاتحة", reciter: "لم يُذكر قارئ محدد في صفحة المصدر", riwayah: "لم تُذكر في صفحة المصدر", publisher: "Ibrahimmusa4 عبر ويكيميديا كومنز", license: "CC0 1.0 · ملكية عامة مكرسة", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:AlF%C4%81tihatulKit%C4%81b.ogg", audioUrl: "https://upload.wikimedia.org/wikipedia/commons/6/6d/AlF%C4%81tihatulKit%C4%81b.ogg", note: "تعرض البطاقة اسم الناشر كما ورد، ولا تنسب التسجيل إلى قارئ محدد بلا تصريح في المصدر." },
+      { title: "الفاتحة بأسلوب قراءة حمزة الكوفي", reciter: "أسلوب حمزة الكوفي بحسب وصف الملف", riwayah: "أسلوب قراءة حمزة الكوفي كما وصف المصدر", publisher: "PeaceSeekers عبر ويكيميديا كومنز", license: "CC0 1.0 · ملكية عامة مكرسة", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:Al_Fatiha_in_Hamzah_al-Kufi_qiraat_style_or_harf.ogg", audioUrl: "https://upload.wikimedia.org/wikipedia/commons/8/82/Al_Fatiha_in_Hamzah_al-Kufi_qiraat_style_or_harf.ogg", note: "صفحة الملف تصفه بأنه تلاوة الفاتحة بأسلوب حمزة الكوفي؛ لا تضاف رواية أو طريق أكثر تحديدًا من دون مرجع صريح." },
     ],
   },
   {
