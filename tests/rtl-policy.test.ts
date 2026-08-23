@@ -15,7 +15,8 @@ describe("سياسة RTL في سَكينة", () => {
     const root = readFileSync("app/_layout.tsx", "utf8");
     const container = readFileSync("components/screen-container.tsx", "utf8");
     const css = readFileSync("global.css", "utf8");
-    expect(root).toContain("enforceRtlLayout()");
+    expect(root).not.toContain("forceRTL(");
+    expect(root).not.toContain("direction: RTL_DIRECTION");
     expect(root).toContain("accessibilityLanguage={RTL_LANGUAGE_TAG}");
     expect(container).toContain("style={[rtlRoot, style]}");
     expect(css).toContain("direction: rtl");

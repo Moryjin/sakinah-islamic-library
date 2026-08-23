@@ -1,14 +1,9 @@
-import { useEffect, useRef } from "react";
-import { Animated, type ViewProps } from "react-native";
+import { View, type ViewProps } from "react-native";
 
-export function MotionIn({ children, style, ...props }: ViewProps) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(8)).current;
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: true }),
-      Animated.timing(translateY, { toValue: 0, duration: 240, useNativeDriver: true }),
-    ]).start();
-  }, [opacity, translateY]);
-  return <Animated.View {...props} style={[style, { opacity, transform: [{ translateY }] }]}>{children}</Animated.View>;
+/**
+ * غلاف عرض آمن للجوال. تُعاد الحركة لاحقًا بعد التحقق من Android،
+ * لكن لا تُمرر className إلى Animated.View لأن ذلك سبب محتمل لاختلاف native/web.
+ */
+export function MotionIn({ children, style, className, ...props }: ViewProps & { className?: string }) {
+  return <View {...props} className={className} style={style}>{children}</View>;
 }

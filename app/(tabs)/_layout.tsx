@@ -13,7 +13,7 @@ export default function TabLayout() {
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
 
   return (
-    <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: colors.tint, tabBarInactiveTintColor: colors.tabIconDefault, tabBarButton: HapticTab, tabBarLabelStyle: { fontSize: 11, fontWeight: "600", ...rtlText }, tabBarItemStyle: { direction: "rtl" }, tabBarStyle: { paddingTop: 8, paddingBottom: bottomPadding, height: 58 + bottomPadding, backgroundColor: colors.background, borderTopColor: colors.border, borderTopWidth: 0.5, direction: "rtl" } }}>
+    <Tabs screenOptions={{ headerShown: false, tabBarActiveTintColor: colors.tint, tabBarInactiveTintColor: colors.tabIconDefault, tabBarButton: HapticTab, tabBarLabelStyle: { fontSize: 11, fontWeight: "600", ...rtlText }, tabBarStyle: { paddingTop: 8, paddingBottom: bottomPadding, height: 58 + bottomPadding, backgroundColor: colors.background, borderTopColor: colors.border, borderTopWidth: 0.5 } }}>
       <Tabs.Screen name="index" options={{ title: "الرئيسية", tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} /> }} />
       <Tabs.Screen name="library" options={{ title: "المكتبة", tabBarIcon: ({ color }) => <IconSymbol size={24} name="book.closed.fill" color={color} /> }} />
       <Tabs.Screen name="hadith" options={{ title: "الحديث", tabBarIcon: ({ color }) => <IconSymbol size={24} name="quote.bubble.fill" color={color} /> }} />
