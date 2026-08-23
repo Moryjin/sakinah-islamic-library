@@ -69,6 +69,8 @@ export default function RootLayout() {
               <Stack.Screen name="quran/[number]" />
               <Stack.Screen name="bukhari/index" />
               <Stack.Screen name="bukhari/[book]" />
+              <Stack.Screen name="muslim/index" />
+              <Stack.Screen name="muslim/[book]" />
               <Stack.Screen name="adhkar/online" />
               <Stack.Screen name="adhkar/[category]" />
               <Stack.Screen name="section/[kind]" />

@@ -1,10 +1,11 @@
 const BUKHARI_BASE = "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1";
+import { readHadithPack } from "@/lib/hadith-packs";
 
 export const bukhariOnlineCitation = {
   source: "Hadith API · ara-bukhari",
   sourceUrl: "https://github.com/fawazahmed0/hadith-api",
   datasetUrl: `${BUKHARI_BASE}/editions/ara-bukhari.json`,
-  status: "مصدر مرحلي مفتوح حتى اعتماد المصدر الرسمي",
+  status: "بيانات عربية مفتوحة المصدر؛ أرقام الكتب والأحاديث ظاهرة في بطاقة المادة",
 };
 
 type RawCatalog = {
@@ -23,6 +24,7 @@ type RawSection = {
   metadata: { name: string; section: Record<string, string>; section_detail: Record<string, { hadithnumber_first: number; hadithnumber_last: number }> };
   hadiths: RawHadith[];
 };
+type RawComplete = RawCatalog & { hadiths: RawHadith[] };
 
 export type BukhariBook = { id: number; title: string };
 export type BukhariHadith = { number: number; arabicNumber: number; text: string; book: number; chapterNumber: number; grade: string | null };
@@ -35,7 +37,7 @@ async function fetchJson<T>(path: string): Promise<T> {
 }
 
 export async function getBukhariBooks(): Promise<BukhariBook[]> {
-  const payload = await fetchJson<RawCatalog>("/editions/ara-bukhari.json");
+  const payload = (await readHadithPack<RawComplete>("bukhari")) ?? await fetchJson<RawCatalog>("/editions/ara-bukhari.json");
   return Object.entries(payload.metadata.sections)
     .filter(([key]) => Number(key) > 0)
     .map(([key, title]) => ({ id: Number(key), title }));
@@ -43,6 +45,11 @@ export async function getBukhariBooks(): Promise<BukhariBook[]> {
 
 export async function getBukhariSection(book: number): Promise<BukhariSection> {
   if (!Number.isInteger(book) || book < 1 || book > 97) throw new Error("BUKHARI_BOOK_INVALID");
+  const stored = await readHadithPack<RawComplete>("bukhari");
+  if (stored) {
+    const hadiths = stored.hadiths.filter((item) => item.reference.book === book).map((item) => ({ number: item.hadithnumber, arabicNumber: item.arabicnumber, text: item.text.trim(), book: item.reference.book, chapterNumber: item.reference.hadith, grade: item.grades[0]?.grade ?? null }));
+    return { title: stored.metadata.sections[String(book)] ?? `الكتاب ${book}`, firstHadith: hadiths[0]?.number ?? 0, lastHadith: hadiths.at(-1)?.number ?? 0, hadiths };
+  }
   const payload = await fetchJson<RawSection>(`/editions/ara-bukhari/sections/${book}.json`);
   const title = payload.metadata.section[String(book)] ?? `الكتاب ${book}`;
   const detail = payload.metadata.section_detail[String(book)];

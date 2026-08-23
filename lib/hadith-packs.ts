@@ -1,0 +1,70 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from "expo-file-system/legacy";
+import { Platform } from "react-native";
+
+import { trustedUrlOrNull } from "@/lib/security";
+
+export type HadithPackId = "bukhari" | "muslim";
+type PackRecord = { id: HadithPackId; uri: string; bytes: number; downloadedAt: string; sourceUrl: string };
+
+const PACKS_KEY = "sakinah.hadith-packs.v1";
+const packDirectory = FileSystem.documentDirectory ? `${FileSystem.documentDirectory}sakinah-hadith/` : null;
+
+export const hadithPackCatalog: Record<HadithPackId, { title: string; sourceUrl: string }> = {
+  bukhari: { title: "صحيح البخاري", sourceUrl: "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-bukhari.json" },
+  muslim: { title: "صحيح مسلم", sourceUrl: "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-muslim.json" },
+};
+
+async function records(): Promise<Partial<Record<HadithPackId, PackRecord>>> {
+  try { return JSON.parse((await AsyncStorage.getItem(PACKS_KEY)) ?? "{}"); } catch { return {}; }
+}
+
+async function saveRecords(next: Partial<Record<HadithPackId, PackRecord>>) {
+  await AsyncStorage.setItem(PACKS_KEY, JSON.stringify(next));
+}
+
+function destination(id: HadithPackId) {
+  if (!packDirectory) throw new Error("PACK_STORAGE_UNAVAILABLE");
+  return `${packDirectory}${id}.json`;
+}
+
+export async function getHadithPack(id: HadithPackId): Promise<PackRecord | null> {
+  if (Platform.OS === "web") return null;
+  const record = (await records())[id];
+  if (!record) return null;
+  const info = await FileSystem.getInfoAsync(record.uri);
+  return info.exists ? record : null;
+}
+
+export async function readHadithPack<T>(id: HadithPackId): Promise<T | null> {
+  const record = await getHadithPack(id);
+  if (!record) return null;
+  try { return JSON.parse(await FileSystem.readAsStringAsync(record.uri)) as T; } catch { return null; }
+}
+
+export async function downloadHadithPack(id: HadithPackId, onProgress?: (ratio: number) => void): Promise<PackRecord> {
+  if (Platform.OS === "web") throw new Error("PACKS_NATIVE_ONLY");
+  const source = trustedUrlOrNull(hadithPackCatalog[id].sourceUrl);
+  if (!source) throw new Error("PACK_SOURCE_UNTRUSTED");
+  if (!packDirectory) throw new Error("PACK_STORAGE_UNAVAILABLE");
+  await FileSystem.makeDirectoryAsync(packDirectory, { intermediates: true });
+  const uri = destination(id);
+  const task = FileSystem.createDownloadResumable(source, uri, {}, (event) => {
+    if (event.totalBytesExpectedToWrite > 0) onProgress?.(event.totalBytesWritten / event.totalBytesExpectedToWrite);
+  });
+  const result = await task.downloadAsync();
+  if (!result?.uri) throw new Error("PACK_DOWNLOAD_FAILED");
+  const info = await FileSystem.getInfoAsync(result.uri);
+  if (!info.exists || !info.size) throw new Error("PACK_FILE_INVALID");
+  const record: PackRecord = { id, uri: result.uri, bytes: info.size, downloadedAt: new Date().toISOString(), sourceUrl: source };
+  await saveRecords({ ...(await records()), [id]: record });
+  return record;
+}
+
+export async function removeHadithPack(id: HadithPackId) {
+  const current = await getHadithPack(id);
+  if (current) await FileSystem.deleteAsync(current.uri, { idempotent: true });
+  const next = await records();
+  delete next[id];
+  await saveRecords(next);
+}
