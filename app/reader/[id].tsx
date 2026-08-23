@@ -9,6 +9,7 @@ import { RecitationPlayer } from "@/components/recitation-player";
 import { EmptyState } from "@/components/sakinah-ui";
 import { collectionMeta, hasCompleteCitation, libraryItems } from "@/data/sakinah-library";
 import { useColors } from "@/hooks/use-colors";
+import { useReadingSettings } from "@/lib/reading-settings";
 import { useSakinahStore } from "@/lib/sakinah-store";
 import { ScreenContainer } from "@/components/screen-container";
 
@@ -19,6 +20,7 @@ export default function ReaderScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const colors = useColors();
+  const { scale } = useReadingSettings();
   const { favoriteIds, toggleFavorite, markOpened } = useSakinahStore();
   const item = libraryItems.find((entry) => entry.id === id);
 
@@ -33,8 +35,8 @@ export default function ReaderScreen() {
 
   return (
     <ScreenContainer className="px-5" edges={["top", "bottom", "left", "right"]}>
-      <FlatList data={[item.body]} keyExtractor={(_, index) => String(index)} renderItem={({ item: body }) => <View style={{ backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 26, padding: 20 }}><Text style={{ color: colors.foreground, fontSize: isQuran ? 23 : 17, lineHeight: isQuran ? 48 : 32, ...rtl }}>{body}</Text></View>} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 12, paddingBottom: 28 }} ListHeaderComponent={<>
-        <View className="flex-row-reverse items-center justify-between mb-6"><Pressable onPress={() => router.back()} style={({ pressed }) => ({ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><MaterialIcons name="arrow-forward" size={21} color={colors.foreground} /></Pressable><View className="flex-1 mx-3"><Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "800", ...rtl }} numberOfLines={1}>{item.title}</Text><Text style={{ color: colors.muted, fontSize: 12, marginTop: 3, ...rtl }}>{item.subtitle}</Text></View><Pressable onPress={() => toggleFavorite(item.id)} style={({ pressed }) => ({ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><MaterialIcons name={saved ? "bookmark" : "bookmark-border"} size={21} color={saved ? colors.primary : colors.foreground} /></Pressable></View>
+      <FlatList data={[item.body]} keyExtractor={(_, index) => String(index)} renderItem={({ item: body }) => <View style={{ backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 26, padding: 20 }}><Text style={{ color: colors.foreground, fontSize: Math.round((isQuran ? 23 : 17) * scale), lineHeight: Math.round((isQuran ? 48 : 32) * scale), ...rtl }}>{body}</Text></View>} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 12, paddingBottom: 28 }} ListHeaderComponent={<>
+        <View className="flex-row-reverse items-center justify-between mb-6"><Pressable onPress={() => router.back()} style={({ pressed }) => ({ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><MaterialIcons name="arrow-forward" size={21} color={colors.foreground} /></Pressable><View className="flex-1 mx-3"><Text style={{ color: colors.foreground, fontSize: 17, fontWeight: "800", ...rtl }} numberOfLines={1}>{item.title}</Text><Text style={{ color: colors.muted, fontSize: 12, marginTop: 3, ...rtl }}>{item.subtitle}</Text></View><View className="flex-row-reverse" style={{ gap: 8 }}><Pressable onPress={() => router.push("/settings/reading")} style={({ pressed }) => ({ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><MaterialIcons name="format-size" size={20} color={colors.primary} /></Pressable><Pressable onPress={() => toggleFavorite(item.id)} style={({ pressed }) => ({ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><MaterialIcons name={saved ? "bookmark" : "bookmark-border"} size={21} color={saved ? colors.primary : colors.foreground} /></Pressable></View></View>
         <View style={{ backgroundColor: `${meta.color}15`, borderRadius: 18, padding: 13, marginBottom: 15 }}><Text style={{ color: meta.color, fontSize: 12, fontWeight: "800", ...rtl }}>{meta.title}</Text><Text style={{ color: colors.foreground, fontSize: 13, lineHeight: 21, marginTop: 4, ...rtl }}>{item.source.note}</Text></View>
         <CitationCard item={item} />
         {item.recitations?.length ? <RecitationPlayer recitations={item.recitations} /> : null}

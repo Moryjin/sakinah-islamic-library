@@ -13,7 +13,7 @@ type RawHadith = { hadithnumber: number; arabicnumber: number | string; text: st
 type RawSection = { metadata: { section: Record<string, string>; section_detail: Record<string, { hadithnumber_first: number; hadithnumber_last: number }> }; hadiths: RawHadith[] };
 type RawComplete = RawCatalog & { hadiths: RawHadith[] };
 
-export type MuslimBook = { id: number; title: string };
+export type MuslimBook = { id: number; title: string; firstHadith?: number; lastHadith?: number };
 export type MuslimHadith = { number: number; arabicNumber: string; text: string; book: number; chapterNumber: number; grade: string | null };
 export type MuslimSection = { title: string; firstHadith: number; lastHadith: number; hadiths: MuslimHadith[] };
 
@@ -24,8 +24,14 @@ async function fetchJson<T>(path: string): Promise<T> {
 }
 
 export async function getMuslimBooks(): Promise<MuslimBook[]> {
-  const payload = (await readHadithPack<RawComplete>("muslim")) ?? await fetchJson<RawCatalog>("/editions/ara-muslim.json");
-  return Object.entries(payload.metadata.sections).map(([key, title]) => ({ id: Number(key), title }));
+  const stored = await readHadithPack<RawComplete>("muslim");
+  const payload = stored ?? await fetchJson<RawCatalog>("/editions/ara-muslim.json");
+  const ranges = new Map<number, { firstHadith: number; lastHadith: number }>();
+  stored?.hadiths.forEach((hadith) => {
+    const current = ranges.get(hadith.reference.book);
+    ranges.set(hadith.reference.book, { firstHadith: current ? Math.min(current.firstHadith, hadith.hadithnumber) : hadith.hadithnumber, lastHadith: current ? Math.max(current.lastHadith, hadith.hadithnumber) : hadith.hadithnumber });
+  });
+  return Object.entries(payload.metadata.sections).map(([key, title]) => ({ id: Number(key), title, ...ranges.get(Number(key)) }));
 }
 
 export async function getMuslimSection(book: number): Promise<MuslimSection> {

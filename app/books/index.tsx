@@ -1,0 +1,25 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { type Href, useRouter } from "expo-router";
+import { FlatList, Pressable, Text, View } from "react-native";
+
+import { ScreenContainer } from "@/components/screen-container";
+import { openSource } from "@/components/sakinah-ui";
+import { bookDelivery } from "@/lib/book-delivery";
+import { sectionMeta } from "@/data/sakinah-library";
+import { useColors } from "@/hooks/use-colors";
+
+const rtl = { textAlign: "right" as const, writingDirection: "rtl" as const };
+const localLabel = { available: "تنزيل دون اتصال متاح", planned: "تنزيل دون اتصال قيد الإعداد", "not-licensed": "رابط مصدر محفوظ الحقوق" } as const;
+
+export default function BooksDeliveryScreen() {
+  const colors = useColors(); const router = useRouter();
+  const open = (kind: (typeof bookDelivery)[number]["kind"], sourceUrl: string, direct: boolean) => {
+    if (direct && kind === "quran") router.push("/quran" as Href);
+    else if (direct && kind === "bukhari") router.push("/bukhari" as Href);
+    else if (direct && kind === "muslim") router.push("/muslim" as Href);
+    else if (direct && kind === "adhkar") router.push("/adhkar/online" as Href);
+    else if (direct && kind === "daily-ward") router.push("/quran" as Href);
+    else openSource(sourceUrl);
+  };
+  return <ScreenContainer className="px-5" edges={["top", "bottom", "left", "right"]}><FlatList data={bookDelivery} numColumns={2} columnWrapperStyle={{ gap: 10 }} keyExtractor={(item) => item.kind} contentContainerStyle={{ paddingTop: 16, paddingBottom: 34, gap: 10 }} ListHeaderComponent={<View style={{ marginBottom: 7 }}><View style={{ flexDirection: "row-reverse", alignItems: "center", justifyContent: "space-between" }}><View><Text style={{ color: colors.foreground, fontSize: 24, fontWeight: "800", ...rtl }}>تغطية الكتب والوصول</Text><Text style={{ color: colors.muted, fontSize: 12, marginTop: 4, ...rtl }}>كل باب له مسار قراءة ومصدر وحالة تنزيل واضحة</Text></View><Pressable onPress={() => router.back()} style={({ pressed }) => ({ width: 42, height: 42, borderRadius: 21, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><MaterialIcons name="arrow-forward" color={colors.foreground} size={21} /></Pressable></View><View style={{ marginTop: 16, borderRadius: 16, padding: 13, backgroundColor: `${colors.warning}12`, borderWidth: 1, borderColor: `${colors.warning}24` }}><Text style={{ color: colors.warning, fontSize: 11, fontWeight: "800", ...rtl }}>سياسة الوصول المسؤول</Text><Text style={{ color: colors.muted, fontSize: 10, lineHeight: 17, marginTop: 4, ...rtl }}>يُنزّل النص داخل التطبيق عندما تتوفر بيانات منظمة ورخصة مناسبة. أما المواد المحفوظة الحقوق فتبقى ضمن رابط المصدر وفهرسته الموثقة.</Text></View></View>} renderItem={({ item }) => { const meta = sectionMeta[item.kind]; const direct = item.onlineMode === "direct"; return <Pressable onPress={() => open(item.kind, item.sourceUrl, direct)} style={({ pressed }) => ({ flex: 1, minHeight: 174, padding: 14, borderRadius: 18, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, opacity: pressed ? 0.68 : 1 })}><View style={{ flexDirection: "row-reverse", justifyContent: "space-between", alignItems: "center" }}><View style={{ width: 34, height: 34, borderRadius: 12, backgroundColor: `${meta.color}18`, alignItems: "center", justifyContent: "center" }}><MaterialIcons name={meta.icon as never} color={meta.color} size={19} /></View><MaterialIcons name={direct ? "play-circle-outline" : "open-in-new"} color={colors.muted} size={18} /></View><Text style={{ color: colors.foreground, fontSize: 13, fontWeight: "800", marginTop: 10, ...rtl }}>{meta.title}</Text><Text numberOfLines={2} style={{ color: colors.muted, fontSize: 10, lineHeight: 15, marginTop: 4, ...rtl }}>{item.sourceLabel}</Text><View style={{ marginTop: 9, borderRadius: 9, paddingHorizontal: 8, paddingVertical: 5, backgroundColor: item.localMode === "available" ? `${colors.success}16` : `${colors.warning}12` }}><Text numberOfLines={1} style={{ color: item.localMode === "available" ? colors.success : colors.warning, fontSize: 9, fontWeight: "800", ...rtl }}>{localLabel[item.localMode]}</Text></View><Text numberOfLines={2} style={{ color: colors.muted, fontSize: 9, lineHeight: 13, marginTop: 8, ...rtl }}>{item.note}</Text></Pressable>; }} /></ScreenContainer>;
+}
