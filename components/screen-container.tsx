@@ -3,6 +3,7 @@ import { SafeAreaView, type Edge } from "react-native-safe-area-context";
 
 import { cn } from "@/lib/utils";
 import { rtlRoot } from "@/lib/rtl";
+import { useColors } from "@/hooks/use-colors";
 
 export interface ScreenContainerProps extends ViewProps {
   /**
@@ -48,6 +49,8 @@ export function ScreenContainer({
   style,
   ...props
 }: ScreenContainerProps) {
+  const colors = useColors();
+
   // Android لا يحتاج طبقة SafeAreaView إضافية داخل كل تبويب؛ هذا المسار متعمد
   // أن يكون View أصليًا بلا className لعزل تعارضات القالب عن محتوى التطبيق.
   if (Platform.OS !== "web") {
@@ -58,7 +61,7 @@ export function ScreenContainer({
         : undefined;
 
     return (
-      <View style={{ flex: 1, backgroundColor: "#F8F6F1" }} {...props}>
+      <View style={{ flex: 1, backgroundColor: colors.background }} {...props}>
         <View style={[{ flex: 1, paddingTop: (StatusBar.currentHeight ?? 0) + 8 }, nativePadding, style]}>
           {children}
         </View>

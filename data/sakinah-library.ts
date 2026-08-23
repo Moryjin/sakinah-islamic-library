@@ -97,6 +97,7 @@ export type LibraryItem = {
 };
 
 export const sourceDirectory = [
+  { id: "alquran-cloud", name: "Al Quran Cloud API", scope: "عرض نص المصحف كاملًا داخل التطبيق عبر واجهة عامة", url: "https://alquran.cloud/api", icon: "menu-book", allowed: true },
   { id: "quran-complex", name: "مجمع الملك فهد لطباعة المصحف الشريف", scope: "نص القرآن والقراءات والروايات", url: "https://qurancomplex.gov.sa/", icon: "auto-stories", allowed: true },
   { id: "ksu-quran", name: "مشروع المصحف الإلكتروني بجامعة الملك سعود", scope: "نص القرآن والتفاسير", url: "https://quran.ksu.edu.sa/", icon: "menu-book", allowed: true },
   { id: "dorar", name: "الموسوعة الحديثية · الدرر السنية", scope: "التخريج ودرجة الحديث", url: "https://dorar.net/hadith", icon: "verified-user", allowed: true },
@@ -109,7 +110,7 @@ export const sourceDirectory = [
 
 // صفحة الملف في كومنز تبقى مرجع الترخيص، بينما يقدم upload.wikimedia.org
 // ملف الصوت النهائي عبر HTTPS بلا إعادة توجيه داخل المشغل.
-export const allowedSourceHosts = [...sourceDirectory.map((source) => new URL(source.url).hostname), "upload.wikimedia.org"];
+export const allowedSourceHosts = [...sourceDirectory.map((source) => new URL(source.url).hostname), "api.alquran.cloud", "upload.wikimedia.org"];
 
 export const sectionMeta: Record<LibraryKind, { title: string; shortTitle: string; color: string; icon: string; description: string }> = {
   quran: { title: "القرآن الكريم", shortTitle: "القرآن", color: "#0F5B4C", icon: "menu-book", description: "نص الآية ورقمها ومصدر المصحف." },

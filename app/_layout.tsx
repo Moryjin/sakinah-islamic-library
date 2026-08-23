@@ -63,6 +63,10 @@ export default function RootLayout() {
             <Stack screenOptions={{ headerShown: false, animation: Platform.OS === "web" ? "fade_from_bottom" : "none", animationDuration: 240, gestureDirection: "horizontal" }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="reader/[id]" />
+              <Stack.Screen name="quran/index" />
+              <Stack.Screen name="quran/[number]" />
+              <Stack.Screen name="adhkar/online" />
+              <Stack.Screen name="adhkar/[category]" />
               <Stack.Screen name="section/[kind]" />
               <Stack.Screen name="methodology" />
               <Stack.Screen name="oauth/callback" />

@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useMemo, useState } from "react";
+import { type Href, useRouter } from "expo-router";
 import { Alert, FlatList, Platform, Pressable, Switch, Text, View } from "react-native";
 
 import { MotionIn } from "@/components/motion-in";
@@ -32,6 +33,7 @@ const categories = [
 
 export default function AdhkarScreen() {
   const colors = useColors();
+  const router = useRouter();
   const [settings, setSettings] = useState<ReminderSettings>(defaultReminderSettings);
   const [saving, setSaving] = useState(false);
   const adhkar = useMemo(() => verifiedLibraryItems.filter((item) => item.kind === "adhkar" || item.kind === "daily-ward"), []);
@@ -52,6 +54,7 @@ export default function AdhkarScreen() {
 
   return <ScreenContainer className="px-5"><MotionIn className="flex-1"><FlatList data={adhkar} keyExtractor={(item) => item.id} renderItem={({ item }) => <LibraryItemCard item={item} />} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 16, paddingBottom: 28 }} ListHeaderComponent={<>
     <AppHeader title="الأذكار والورد" subtitle="مصنفة بحسب الوقت والمناسبة، مع المصدر والسند والدرجة" />
+    <Pressable onPress={() => router.push("/adhkar/online" as Href)} style={({ pressed }) => ({ marginBottom: 14, padding: 15, borderRadius: 18, backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 })}><View style={{ flexDirection: "row-reverse", alignItems: "center", gap: 9 }}><MaterialIcons name="cloud-queue" color="#FFFFFF" size={21} /><View style={{ flex: 1 }}><Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800", ...rtl }}>فهرس حصن المسلم عبر الإنترنت</Text><Text style={{ color: "#DDF5EA", fontSize: 11, marginTop: 3, ...rtl }}>أبواب الأذكار كاملة معروضة داخل التطبيق</Text></View><MaterialIcons name="chevron-left" color="#FFFFFF" size={21} /></View></Pressable>
     <SectionTitle title="التصنيف" />
     <View className="flex-row-reverse flex-wrap justify-between" style={{ gap: 8 }}>{categories.map((category) => <View key={category.title} style={{ width: "48.8%", flexDirection: "row-reverse", alignItems: "center", gap: 8, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 15, padding: 10 }}><MaterialIcons name={category.icon} size={17} color={colors.primary} /><Text style={{ color: colors.foreground, fontSize: 12, fontWeight: "700", flex: 1, ...rtl }}>{category.title}</Text></View>)}</View>
     <View style={{ backgroundColor: `${colors.primary}15`, borderRadius: 22, padding: 16, marginBottom: 7 }}><View className="flex-row-reverse items-center" style={{ gap: 8 }}><MaterialIcons name="schedule" size={19} color={colors.primary} /><Text style={{ color: colors.foreground, fontSize: 15, fontWeight: "800", ...rtl }}>تذكيراتك</Text></View><Text style={{ color: colors.muted, fontSize: 12, lineHeight: 20, marginTop: 6, ...rtl }}>اختر ما تريد تفعيله وحدد الساعة. كل تنبيه يفتح مادة موثقة داخل سَكينة.</Text></View>
