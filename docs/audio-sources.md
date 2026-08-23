@@ -11,6 +11,9 @@
 | الفاتحة | تلاوة سورة الفاتحة | `AlFātihatulKitāb.ogg`، المستخدم Ibrahimmusa4 | CC0 1.0 Universal Public Domain Dedication | https://commons.wikimedia.org/wiki/File:AlF%C4%81tihatulKit%C4%81b.ogg |
 | الفاتحة | تلاوة الفاتحة بأسلوب قراءة حمزة الكوفي | `Al Fatiha in Hamzah al-Kufi qiraat style or harf.ogg`، المستخدم PeaceSeekers | CC0 1.0 Universal Public Domain Dedication | https://commons.wikimedia.org/wiki/File:Al_Fatiha_in_Hamzah_al-Kufi_qiraat_style_or_harf.ogg |
 | الإخلاص | سورة الإخلاص، 112 | `112.AlIkhlas-MisharyRashedAlafasy.ogg`، ونسبة القارئ ظاهرة في اسم الملف وملخصه | CC0 1.0 Universal Public Domain Dedication | https://commons.wikimedia.org/wiki/File:112.AlIkhlas-MisharyRashedAlafasy.ogg |
+| البقرة 255 | آية الكرسي بصوت الشيخ ماهر المعيقلي | `Verset du Trône, par Maher Al Meaqly.ogg`، المستخدم Science&Vérité | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Verset_du_Tr%C3%B4ne,_par_Maher_Al_Meaqly.ogg |
+| البقرة 256 | آية 256 بصوت الشيخ عبد الرحمن السديس | `AbdurRahman Al Sudais 002.256.wav`، المستخدم Fauzan | CC BY 4.0 | https://commons.wikimedia.org/wiki/File:AbdurRahman_Al_Sudais_002.256.wav |
+| البقرة 255 | آية الكرسي بصوت الشيخ سعود الشريم | `Ayatul Kursi- Saud Al-Shuraim.wav`، المستخدم StroveAnimations | CC0 1.0 Universal Public Domain Dedication | https://commons.wikimedia.org/wiki/File:Ayatul_Kursi-_Saud_Al-Shuraim.wav |
 
 ## ملاحظة التحرير
 

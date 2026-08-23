@@ -151,6 +151,21 @@ export const libraryItems: LibraryItem[] = [
     ],
   },
   {
+    id: "quran-ayat-kursi",
+    kind: "quran",
+    title: "آية الكرسي",
+    subtitle: "سورة البقرة · الآية ٢٥٥",
+    excerpt: "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+    body: "ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ مَا فِى ٱلسَّمَٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍۢ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ",
+    source: { label: "القرآن الكريم", reference: "سورة البقرة، الآية ٢٥٥", url: "https://api.alquran.cloud/v1/ayah/2:255/quran-uthmani", site: "Al Quran Cloud · رسم عثماني", note: "النص مربوط بالسورة والآية ومصدره النصي المفتوح داخل التطبيق." },
+    tags: ["القرآن", "البقرة", "آية الكرسي", "تلاوة"],
+    recitations: [
+      { title: "آية الكرسي · ماهر المعيقلي", reciter: "الشيخ ماهر المعيقلي", riwayah: "غير مذكورة في صفحة الملف", publisher: "Wikimedia Commons · Science&Vérité", license: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:Verset_du_Tr%C3%B4ne,_par_Maher_Al_Meaqly.ogg", audioUrl: "https://upload.wikimedia.org/wikipedia/commons/2/22/Verset_du_Tr%C3%B4ne%2C_par_Maher_Al_Meaqly.ogg", note: "تنسب صفحة الملف التسجيل إلى الشيخ ماهر المعيقلي؛ يظل رابط الصفحة والرخصة ظاهرين قبل التنزيل." },
+      { title: "البقرة ٢٥٦ · عبد الرحمن السديس", reciter: "الشيخ عبد الرحمن السديس", riwayah: "غير مذكورة في صفحة الملف", publisher: "Wikimedia Commons · Fauzan", license: "CC BY 4.0", licenseUrl: "https://creativecommons.org/licenses/by/4.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:AbdurRahman_Al_Sudais_002.256.wav", audioUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4c/AbdurRahman_Al_Sudais_002.256.wav", note: "هذا التسجيل لآية ٢٥٦ كما ورد في صفحة الملف، ويظهر مستقلًا عن آية الكرسي لتفادي نسبة نص غير مطابق." },
+      { title: "آية الكرسي · سعود الشريم", reciter: "الشيخ سعود الشريم", riwayah: "غير مذكورة في صفحة الملف", publisher: "Wikimedia Commons · StroveAnimations", license: "CC0 1.0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/", sourcePage: "https://commons.wikimedia.org/wiki/File:Ayatul_Kursi-_Saud_Al-Shuraim.wav", audioUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Ayatul_Kursi-_Saud_Al-Shuraim.wav", note: "تظهر صفحة الملف اسم القارئ ورخصة CC0 صراحةً، لذلك يمكن تنزيله محليًا داخل مساحة التطبيق." },
+    ],
+  },
+  {
     id: "tafsir-fatiha-saadi",
     kind: "tafsir",
     title: "تفسير السعدي للفـاتحة",

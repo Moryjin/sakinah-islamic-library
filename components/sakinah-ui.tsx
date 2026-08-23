@@ -1,6 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
-import { Alert, Linking, Pressable as TouchableOpacity, Text, View } from "react-native";
+import { Alert, Pressable as TouchableOpacity, Text, View } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
 import { collectionMeta, type LibraryItem } from "@/data/sakinah-library";
 import { useColors } from "@/hooks/use-colors";
@@ -16,7 +17,7 @@ export function openSource(url: string) {
     Alert.alert("رابط غير موثوق", "تمنع سياسة سَكينة فتح الروابط التي لا تستخدم HTTPS أو لا تنتمي إلى مصدر معتمد.");
     return;
   }
-  Linking.openURL(trustedUrl).catch(() => Alert.alert("تعذر فتح المصدر", "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى."));
+  WebBrowser.openBrowserAsync(trustedUrl, { toolbarColor: "#0F5B4C", controlsColor: "#FFFFFF", showTitle: true, enableBarCollapsing: true }).catch(() => Alert.alert("تعذر فتح المصدر", "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى."));
 }
 
 export function AppHeader({ title, subtitle }: { title: string; subtitle?: string }) {

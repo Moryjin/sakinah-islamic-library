@@ -13,6 +13,7 @@
     "lint": "expo lint",
     "format": "prettier --write .",
     "test": "vitest run",
+    "verify:no-ads": "node scripts/verify-no-ads.mjs",
     "verify:online-content": "node scripts/verify-online-content.mjs",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "android": "expo start --android",
