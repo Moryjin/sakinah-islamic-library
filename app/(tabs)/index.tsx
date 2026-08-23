@@ -65,12 +65,12 @@ function NativeAndroidHome() {
           <Text style={{ color: "#D2E9DF", fontSize: 13, lineHeight: 21, marginTop: 8, textAlign: "right", writingDirection: "rtl" }}>اقرأ وردك من المصحف مع مصدر كل آية</Text>
         </View>
         <Text style={{ color: colors.foreground, fontSize: 18, fontWeight: "800", marginTop: 24, textAlign: "right", writingDirection: "rtl" }}>الأبواب الرئيسية</Text>
-        {doors.map((door) => (
-          <Pressable key={door.title} onPress={() => router.push(door.route)} style={({ pressed }) => ({ backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 18, padding: 17, marginTop: 12, opacity: pressed ? 0.7 : 1 })}>
-            <Text style={{ color: colors.foreground, fontSize: 16, fontWeight: "800", textAlign: "right", writingDirection: "rtl" }}>{door.title}</Text>
-            <Text style={{ color: colors.muted, fontSize: 13, marginTop: 5, textAlign: "right", writingDirection: "rtl" }}>{door.description}</Text>
+        <View style={{ flexDirection: "row-reverse", flexWrap: "wrap", justifyContent: "space-between", gap: 10, marginTop: 12 }}>{doors.map((door) => (
+          <Pressable key={door.title} onPress={() => router.push(door.route)} style={({ pressed }) => ({ width: "48.4%", minHeight: 116, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 18, padding: 15, opacity: pressed ? 0.7 : 1 })}>
+            <Text style={{ color: colors.foreground, fontSize: 15, fontWeight: "800", textAlign: "right", writingDirection: "rtl" }}>{door.title}</Text>
+            <Text style={{ color: colors.muted, fontSize: 11, lineHeight: 17, marginTop: 6, textAlign: "right", writingDirection: "rtl" }}>{door.description}</Text>
           </Pressable>
-        ))}
+        ))}</View>
       </ScrollView>
     </View>
   );

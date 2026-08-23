@@ -1,4 +1,5 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { type Href, useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable as TouchableOpacity, Text, View } from "react-native";
 
@@ -12,6 +13,7 @@ const filters: LibraryKind[] = ["bukhari", "muslim"];
 export default function HadithScreen() {
   const [selected, setSelected] = useState<LibraryKind>("bukhari");
   const colors = useColors();
+  const router = useRouter();
   const meta = collectionMeta[selected];
   const items = verifiedLibraryItems.filter((item) => item.kind === selected);
 
@@ -19,6 +21,10 @@ export default function HadithScreen() {
     <ScreenContainer className="px-5">
       <FlatList data={items} keyExtractor={(item) => item.id} renderItem={({ item }) => <LibraryItemCard item={item} />} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 16, paddingBottom: 28 }} ListHeaderComponent={<>
         <AppHeader title="الحديث الشريف" subtitle="صحيح البخاري وصحيح مسلم، مع بيانات المرجع" />
+        <View style={{ flexDirection: "row-reverse", gap: 10, marginBottom: 14 }}>
+          <TouchableOpacity onPress={() => router.push("/bukhari" as Href)} style={({ pressed }) => ({ flex: 1, minHeight: 92, padding: 14, borderRadius: 18, backgroundColor: colors.primary, opacity: pressed ? 0.72 : 1 })}><MaterialIcons name="menu-book" color="#FFFFFF" size={21} /><Text style={{ color: "#FFFFFF", fontWeight: "800", fontSize: 14, marginTop: 9, writingDirection: "rtl", textAlign: "right" }}>صحيح البخاري كاملًا</Text><Text style={{ color: "#DDF5EA", fontSize: 10, marginTop: 4, writingDirection: "rtl", textAlign: "right" }}>٩٧ كتابًا · مصدر مرحلي</Text></TouchableOpacity>
+          <View style={{ flex: 1, minHeight: 92, padding: 14, borderRadius: 18, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface }}><MaterialIcons name="verified-user" color={colors.warning} size={21} /><Text style={{ color: colors.foreground, fontWeight: "800", fontSize: 14, marginTop: 9, writingDirection: "rtl", textAlign: "right" }}>منهج التوثيق</Text><Text style={{ color: colors.muted, fontSize: 10, marginTop: 4, writingDirection: "rtl", textAlign: "right" }}>المصدر والرقم ظاهران</Text></View>
+        </View>
         <View className="flex-row-reverse" style={{ gap: 8 }}>
           {filters.map((kind) => <TouchableOpacity key={kind} onPress={() => setSelected(kind)} style={({ pressed }) => ({ flex: 1, borderRadius: 18, minHeight: 68, padding: 13, backgroundColor: selected === kind ? collectionMeta[kind].color : colors.surface, borderWidth: 1, borderColor: selected === kind ? collectionMeta[kind].color : colors.border, opacity: pressed ? 0.72 : 1 })}><View className="flex-row-reverse items-center gap-2"><MaterialIcons name={collectionMeta[kind].icon as any} size={18} color={selected === kind ? "#FFFFFF" : collectionMeta[kind].color} /><Text style={{ color: selected === kind ? "#FFFFFF" : colors.foreground, fontSize: 14, fontWeight: "800", writingDirection: "rtl" }}>{collectionMeta[kind].title}</Text></View><Text style={{ color: selected === kind ? "rgba(255,255,255,0.78)" : colors.muted, fontSize: 11, marginTop: 8, textAlign: "right", writingDirection: "rtl" }}>مصدر · كتاب · رقم حديث</Text></TouchableOpacity>)}
         </View>

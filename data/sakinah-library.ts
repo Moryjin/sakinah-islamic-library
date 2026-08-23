@@ -103,6 +103,7 @@ export const sourceDirectory = [
   { id: "dorar", name: "الموسوعة الحديثية · الدرر السنية", scope: "التخريج ودرجة الحديث", url: "https://dorar.net/hadith", icon: "verified-user", allowed: true },
   { id: "hisn", name: "حصن المسلم · من أذكار الكتاب والسنة", scope: "فهرسة أبواب الأذكار والأدعية", url: "https://hisnmuslim.com/i/ar/1", icon: "wb-sunny", allowed: true },
   { id: "sunnah", name: "نصوص الأسانيد في دواوين الحديث", scope: "السند العربي والموضع في الصحيحين", url: "https://sunnah.com/", icon: "account-tree", allowed: true },
+  { id: "bukhari-temporary", name: "Hadith API · صحيح البخاري", scope: "مصدر مرحلي مفتوح للنص العربي وأرقام الكتب والأحاديث", url: "https://github.com/fawazahmed0/hadith-api", icon: "format-quote", allowed: true },
   { id: "shamela", name: "المكتبة الشاملة", scope: "الكتب التراثية وبيانات الطبعات والفهارس", url: "https://shamela.ws/", icon: "account-balance", allowed: true },
   { id: "binbaz", name: "الموقع الرسمي للشيخ ابن باز", scope: "المؤلفات والفتاوى المنسوبة للشيخ", url: "https://binbaz.org.sa/", icon: "library-books", allowed: true },
   { id: "commons-audio", name: "ويكيميديا كومنز", scope: "ملفات تلاوة برخص ظاهرة في صفحة الملف", url: "https://commons.wikimedia.org/", icon: "volume-up", allowed: true },
@@ -110,7 +111,7 @@ export const sourceDirectory = [
 
 // صفحة الملف في كومنز تبقى مرجع الترخيص، بينما يقدم upload.wikimedia.org
 // ملف الصوت النهائي عبر HTTPS بلا إعادة توجيه داخل المشغل.
-export const allowedSourceHosts = [...sourceDirectory.map((source) => new URL(source.url).hostname), "api.alquran.cloud", "upload.wikimedia.org"];
+export const allowedSourceHosts = [...sourceDirectory.map((source) => new URL(source.url).hostname), "api.alquran.cloud", "cdn.jsdelivr.net", "upload.wikimedia.org"];
 
 export const sectionMeta: Record<LibraryKind, { title: string; shortTitle: string; color: string; icon: string; description: string }> = {
   quran: { title: "القرآن الكريم", shortTitle: "القرآن", color: "#0F5B4C", icon: "menu-book", description: "نص الآية ورقمها ومصدر المصحف." },
