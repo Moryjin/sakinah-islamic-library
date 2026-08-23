@@ -1,6 +1,6 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
-import { FlatList, Image, Pressable, Text, View } from "react-native";
+import { FlatList, Image, Platform, Pressable, ScrollView, Text, View } from "react-native";
 
 import { MotionIn } from "@/components/motion-in";
 import { AppHeader, LibraryItemCard, SectionTitle } from "@/components/sakinah-ui";
@@ -20,6 +20,12 @@ const quickLinks = [
 ];
 
 export default function HomeScreen() {
+  if (Platform.OS !== "web") return <NativeAndroidHome />;
+
+  return <WebHome />;
+}
+
+function WebHome() {
   const router = useRouter();
   const colors = useColors();
   const { lastOpenedId } = useSakinahStore();
@@ -31,4 +37,34 @@ export default function HomeScreen() {
     <View className="flex-row-reverse flex-wrap justify-between" style={{ gap: 10 }}>{quickLinks.map((link) => { const section = sectionMeta[link.kind]; const open = () => link.title === "الأذكار" ? router.push("/adhkar") : link.title === "منهج سَكينة" ? router.push("/methodology") : router.push({ pathname: "/section/[kind]", params: { kind: link.kind } }); return <Pressable key={link.title} onPress={open} style={({ pressed }) => ({ width: "31.8%", backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 20, padding: 12, minHeight: 120, opacity: pressed ? 0.74 : 1 })}><View style={{ width: 33, height: 33, borderRadius: 12, backgroundColor: `${section.color}18`, alignItems: "center", justifyContent: "center", marginBottom: 9 }}><MaterialIcons name={link.icon} size={18} color={section.color} /></View><Text style={{ color: colors.foreground, fontSize: 13, fontWeight: "800", ...rtl }}>{link.title}</Text><Text style={{ color: colors.muted, fontSize: 10, marginTop: 4, lineHeight: 14, ...rtl }}>{link.hint}</Text></Pressable>; })}</View>
     <SectionTitle title="تابع من حيث توقفت" action="المحفوظات" onAction={() => router.push("/saved")} />
   </>} /></MotionIn></ScreenContainer>;
+}
+
+function NativeAndroidHome() {
+  const router = useRouter();
+  const doors = [
+    { title: "المكتبة", description: "القرآن والتفسير والكتب الموثقة", route: "/library" as const },
+    { title: "الحديث", description: "السند والدرجة والتخريج", route: "/hadith" as const },
+    { title: "الأذكار", description: "أذكار الوقت والأدعية", route: "/adhkar" as const },
+  ];
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#F8F6F1", paddingTop: 42 }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+        <Text style={{ color: "#123C34", fontSize: 28, fontWeight: "800", textAlign: "right", writingDirection: "rtl" }}>سَكينة</Text>
+        <Text style={{ color: "#65716D", fontSize: 14, marginTop: 4, textAlign: "right", writingDirection: "rtl" }}>مكتبة موثقة للقراءة والتدبر</Text>
+        <View style={{ backgroundColor: "#0F5B4C", borderRadius: 24, padding: 21, marginTop: 20 }}>
+          <Text style={{ color: "#F8E7B6", fontSize: 13, fontWeight: "700", textAlign: "right", writingDirection: "rtl" }}>ورد اليوم</Text>
+          <Text style={{ color: "#FFFFFF", fontSize: 25, fontWeight: "800", marginTop: 7, textAlign: "right", writingDirection: "rtl" }}>لا سند، لا نص</Text>
+          <Text style={{ color: "#D2E9DF", fontSize: 13, lineHeight: 21, marginTop: 8, textAlign: "right", writingDirection: "rtl" }}>تم تشغيل الواجهة الأصلية الآمنة لأندرويد</Text>
+        </View>
+        <Text style={{ color: "#123C34", fontSize: 18, fontWeight: "800", marginTop: 24, textAlign: "right", writingDirection: "rtl" }}>الأبواب الرئيسية</Text>
+        {doors.map((door) => (
+          <Pressable key={door.title} onPress={() => router.push(door.route)} style={({ pressed }) => ({ backgroundColor: "#FFFFFF", borderColor: "#E0DDD6", borderWidth: 1, borderRadius: 18, padding: 17, marginTop: 12, opacity: pressed ? 0.7 : 1 })}>
+            <Text style={{ color: "#123C34", fontSize: 16, fontWeight: "800", textAlign: "right", writingDirection: "rtl" }}>{door.title}</Text>
+            <Text style={{ color: "#65716D", fontSize: 13, marginTop: 5, textAlign: "right", writingDirection: "rtl" }}>{door.description}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </View>
+  );
 }

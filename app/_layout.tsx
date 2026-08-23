@@ -60,7 +60,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <SakinahStoreProvider>
             <View style={rtlRoot} accessibilityLanguage={RTL_LANGUAGE_TAG}>
-            <Stack screenOptions={{ headerShown: false, animation: "fade_from_bottom", animationDuration: 240, gestureDirection: "horizontal" }}>
+            <Stack screenOptions={{ headerShown: false, animation: Platform.OS === "web" ? "fade_from_bottom" : "none", animationDuration: 240, gestureDirection: "horizontal" }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="reader/[id]" />
               <Stack.Screen name="section/[kind]" />
@@ -79,7 +79,7 @@ export default function RootLayout() {
   return (
     <AppErrorBoundary>
       <ThemeProvider>
-      <SafeAreaProvider initialMetrics={providerInitialMetrics}>
+      <SafeAreaProvider initialMetrics={Platform.OS === "web" ? providerInitialMetrics : undefined}>
         {Platform.OS === "web" ? <SafeAreaFrameContext.Provider value={frame}><SafeAreaInsetsContext.Provider value={insets}>{content}</SafeAreaInsetsContext.Provider></SafeAreaFrameContext.Provider> : content}
       </SafeAreaProvider>
       </ThemeProvider>
