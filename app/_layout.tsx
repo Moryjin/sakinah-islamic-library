@@ -15,6 +15,7 @@ import { ThemeProvider } from "@/lib/theme-provider";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { SakinahSplash } from "@/components/sakinah-splash";
+import { AppErrorBoundary } from "@/components/app-error-boundary";
 import { RTL_LANGUAGE_TAG, rtlRoot } from "@/lib/rtl";
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -76,10 +77,12 @@ export default function RootLayout() {
   );
 
   return (
-    <ThemeProvider>
+    <AppErrorBoundary>
+      <ThemeProvider>
       <SafeAreaProvider initialMetrics={providerInitialMetrics}>
         {Platform.OS === "web" ? <SafeAreaFrameContext.Provider value={frame}><SafeAreaInsetsContext.Provider value={insets}>{content}</SafeAreaInsetsContext.Provider></SafeAreaFrameContext.Provider> : content}
       </SafeAreaProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AppErrorBoundary>
   );
 }
