@@ -30,7 +30,8 @@ export async function downloadQuranPack(onProgress?: (ratio: number) => void, on
   if (Platform.OS === "web") throw new Error("QURAN_PACKS_NATIVE_ONLY");
   const trustedSource = trustedUrlOrNull(sourceUrl);
   if (!trustedSource || !destination) throw new Error("QURAN_PACK_SOURCE_UNTRUSTED");
-  const task = FileSystem.createDownloadResumable(trustedSource, destination, {}, (event) => {
+  await FileSystem.deleteAsync(destination, { idempotent: true });
+  const task = FileSystem.createDownloadResumable(trustedSource, destination, { headers: { Accept: "application/json,text/plain;q=0.9,*/*;q=0.1" } }, (event) => {
     if (event.totalBytesExpectedToWrite > 0) onProgress?.(event.totalBytesWritten / event.totalBytesExpectedToWrite);
   });
   onTask?.(task);
@@ -43,7 +44,7 @@ export async function downloadQuranPack(onProgress?: (ratio: number) => void, on
     JSON.parse(await FileSystem.readAsStringAsync(result.uri));
   } catch (error) { if (result?.uri) await FileSystem.deleteAsync(result.uri, { idempotent: true }); throw error; }
   const record: PackRecord = { uri: result.uri, bytes: info.size, downloadedAt: new Date().toISOString(), sourceUrl: trustedSource };
-  await AsyncStorage.setItem(PACK_KEY, JSON.stringify(record));
+  try { await AsyncStorage.setItem(PACK_KEY, JSON.stringify(record)); } catch (error) { await FileSystem.deleteAsync(result.uri, { idempotent: true }); throw error; }
   return record;
 }
 

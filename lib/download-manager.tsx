@@ -25,6 +25,7 @@ const contentDetails: Record<ContentId, Pick<DownloadItem, "title" | "subtitle">
 const contentItem = (id: ContentId, state: DownloadState, details: Partial<DownloadItem> = {}): DownloadItem => ({ id, kind: "content", progress: state === "completed" ? 1 : 0, ...contentDetails[id], ...details, state });
 const readablePackError = (error: unknown) => {
   const code = error instanceof Error ? error.message : "";
+  if (["ENAMETOOLONG", "DESTINATIONALREADYEXISTS", "EACCES", "ENOENT", "CANNOT_CREATE", "FILE_SYSTEM"].some((fragment) => code.toUpperCase().includes(fragment))) return "تعذر تجهيز مساحة الحفظ المحلية. حُذف الملف الجزئي؛ أعد المحاولة بعد التأكد من مساحة الهاتف.";
   if (code.includes("HTTP_429")) return "الخادم حدّ الطلبات مؤقتًا. أعد المحاولة بعد قليل.";
   if (code.includes("HTTP_")) return "رفض مصدر الحزمة التنزيل مؤقتًا.";
   if (code.includes("MIME") || code.includes("INVALID")) return "وصل ملف غير صالح، لذلك حذفه التطبيق تلقائيًا.";

@@ -3,7 +3,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import { Platform } from "react-native";
 
 import type { RecitationMeta } from "@/data/sakinah-library";
-import { assertValidDownload, audioExtensionFor } from "@/lib/download-validation";
+import { assertValidDownload, audioExtensionFor, storageFileName } from "@/lib/download-validation";
 import { trustedUrlOrNull } from "@/lib/security";
 
 type AudioRecord = { uri: string; sourceUrl: string; downloadedAt: string; bytes: number; mimeType: string | null };
@@ -27,7 +27,7 @@ export async function downloadRecitation(recording: RecitationMeta, onProgress?:
   if (Platform.OS === "web") throw new Error("AUDIO_DOWNLOAD_NATIVE_ONLY");
   const source = trustedUrlOrNull(recording.audioUrl); if (!source || !directory) throw new Error("AUDIO_SOURCE_UNTRUSTED");
   await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
-  const id = idFor(recording.audioUrl); const uri = `${directory}${id}.${audioExtensionFor(source)}`;
+  const id = idFor(recording.audioUrl); const uri = `${directory}${storageFileName("recitation", source, audioExtensionFor(source))}`;
   await FileSystem.deleteAsync(uri, { idempotent: true });
   const task = FileSystem.createDownloadResumable(source, uri, { headers: { Accept: "audio/*,application/ogg;q=0.9,*/*;q=0.1" } }, (event) => { if (event.totalBytesExpectedToWrite > 0) onProgress?.(event.totalBytesWritten / event.totalBytesExpectedToWrite); });
   onTask?.(task);
@@ -39,7 +39,8 @@ export async function downloadRecitation(recording: RecitationMeta, onProgress?:
     assertValidDownload({ status: result.status, mimeType: result.mimeType, bytes: info.size, allowedMimeTypes: ["audio", "application/ogg"], minBytes: MIN_AUDIO_BYTES, code: "AUDIO_DOWNLOAD" });
   } catch (error) { if (result?.uri) await FileSystem.deleteAsync(result.uri, { idempotent: true }); await forget(id); throw error; }
   const record: AudioRecord = { uri: result.uri, sourceUrl: source, downloadedAt: new Date().toISOString(), bytes: info.size, mimeType: result.mimeType };
-  await AsyncStorage.setItem(KEY, JSON.stringify({ ...(await all()), [id]: record })); return record;
+  try { await AsyncStorage.setItem(KEY, JSON.stringify({ ...(await all()), [id]: record })); } catch (error) { await FileSystem.deleteAsync(result.uri, { idempotent: true }); throw error; }
+  return record;
 }
 
 export async function removeRecitationDownload(recording: RecitationMeta) {

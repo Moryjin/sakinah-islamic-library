@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { assertValidDownload, audioExtensionFor, readableAudioDownloadError } from "../lib/download-validation";
+import { assertValidDownload, audioExtensionFor, readableAudioDownloadError, storageFileName } from "../lib/download-validation";
 
 describe("download validation", () => {
   it("يرفض استجابات الخطأ والملفات الصغيرة أو غير الصوتية", () => {
@@ -11,5 +11,12 @@ describe("download validation", () => {
   it("يتعرف على امتداد الصوت ويعطي رسالة قابلة للفهم لحد الطلبات", () => {
     expect(audioExtensionFor("https://host/file.wav?x=1")).toBe("wav");
     expect(readableAudioDownloadError(new Error("AUDIO_DOWNLOAD_HTTP_429"))).toContain("حدّ الطلبات");
+  });
+
+  it("ينتج اسم تخزين قصيرًا ثابتًا لروابط التلاوات الطويلة ويشرح فشل مساحة الحفظ", () => {
+    const longUrl = `https://upload.wikimedia.org/${"very-long-path/".repeat(40)}recitation.ogg`;
+    expect(storageFileName("recitation", longUrl, "ogg")).toMatch(/^recitation-[a-z0-9]+\.ogg$/);
+    expect(storageFileName("recitation", longUrl, "ogg").length).toBeLessThan(64);
+    expect(readableAudioDownloadError(new Error("ENAMETOOLONG"))).toContain("مساحة الحفظ");
   });
 });

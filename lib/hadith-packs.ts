@@ -50,7 +50,8 @@ export async function downloadHadithPack(id: HadithPackId, onProgress?: (ratio: 
   if (!packDirectory) throw new Error("PACK_STORAGE_UNAVAILABLE");
   await FileSystem.makeDirectoryAsync(packDirectory, { intermediates: true });
   const uri = destination(id);
-  const task = FileSystem.createDownloadResumable(source, uri, {}, (event) => {
+  await FileSystem.deleteAsync(uri, { idempotent: true });
+  const task = FileSystem.createDownloadResumable(source, uri, { headers: { Accept: "application/json,text/plain;q=0.9,*/*;q=0.1" } }, (event) => {
     if (event.totalBytesExpectedToWrite > 0) onProgress?.(event.totalBytesWritten / event.totalBytesExpectedToWrite);
   });
   onTask?.(task);
@@ -63,7 +64,7 @@ export async function downloadHadithPack(id: HadithPackId, onProgress?: (ratio: 
     JSON.parse(await FileSystem.readAsStringAsync(result.uri));
   } catch (error) { if (result?.uri) await FileSystem.deleteAsync(result.uri, { idempotent: true }); throw error; }
   const record: PackRecord = { id, uri: result.uri, bytes: info.size, downloadedAt: new Date().toISOString(), sourceUrl: source };
-  await saveRecords({ ...(await records()), [id]: record });
+  try { await saveRecords({ ...(await records()), [id]: record }); } catch (error) { await FileSystem.deleteAsync(result.uri, { idempotent: true }); throw error; }
   return record;
 }
 
