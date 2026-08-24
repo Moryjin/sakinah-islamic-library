@@ -13,6 +13,7 @@ import "@/lib/_core/nativewind-pressable";
 import { SakinahStoreProvider } from "@/lib/sakinah-store";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { ReadingSettingsProvider } from "@/lib/reading-settings";
+import { DownloadManagerProvider } from "@/lib/download-manager";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { SakinahSplash } from "@/components/sakinah-splash";
@@ -60,6 +61,7 @@ export default function RootLayout() {
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <SakinahStoreProvider>
+            <DownloadManagerProvider>
             <ReadingSettingsProvider>
             <View style={rtlRoot} accessibilityLanguage={RTL_LANGUAGE_TAG}>
             <Stack screenOptions={{ headerShown: false, animation: Platform.OS === "web" ? "fade_from_bottom" : "none", animationDuration: 240, gestureDirection: "horizontal" }}>
@@ -69,6 +71,7 @@ export default function RootLayout() {
               <Stack.Screen name="sources" />
               <Stack.Screen name="books/index" />
               <Stack.Screen name="books/[kind]" />
+              <Stack.Screen name="downloads" />
               <Stack.Screen name="settings/reading" />
               <Stack.Screen name="quran/index" />
               <Stack.Screen name="quran/[number]" />
@@ -86,6 +89,7 @@ export default function RootLayout() {
             {showBrandSplash ? <SakinahSplash /> : null}
             </View>
             </ReadingSettingsProvider>
+            </DownloadManagerProvider>
           </SakinahStoreProvider>
         </QueryClientProvider>
       </trpc.Provider>

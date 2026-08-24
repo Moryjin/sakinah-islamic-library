@@ -23,14 +23,16 @@ export async function getRecitationDownload(recording: RecitationMeta) {
   return current;
 }
 
-export async function downloadRecitation(recording: RecitationMeta, onProgress?: (value: number) => void) {
+export async function downloadRecitation(recording: RecitationMeta, onProgress?: (value: number) => void, onTask?: (task: FileSystem.DownloadResumable) => void) {
   if (Platform.OS === "web") throw new Error("AUDIO_DOWNLOAD_NATIVE_ONLY");
   const source = trustedUrlOrNull(recording.audioUrl); if (!source || !directory) throw new Error("AUDIO_SOURCE_UNTRUSTED");
   await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
   const id = idFor(recording.audioUrl); const uri = `${directory}${id}.${audioExtensionFor(source)}`;
   await FileSystem.deleteAsync(uri, { idempotent: true });
   const task = FileSystem.createDownloadResumable(source, uri, { headers: { Accept: "audio/*,application/ogg;q=0.9,*/*;q=0.1" } }, (event) => { if (event.totalBytesExpectedToWrite > 0) onProgress?.(event.totalBytesWritten / event.totalBytesExpectedToWrite); });
-  const result = await task.downloadAsync();
+  onTask?.(task);
+  let result: FileSystem.FileSystemDownloadResult | undefined;
+  try { result = await task.downloadAsync(); } catch (error) { await FileSystem.deleteAsync(uri, { idempotent: true }); await forget(id); throw error; }
   const info = result?.uri ? await FileSystem.getInfoAsync(result.uri) : null;
   try {
     if (!result?.uri || !info?.exists || !info.size) throw new Error("AUDIO_DOWNLOAD_FAILED");

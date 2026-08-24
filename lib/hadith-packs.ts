@@ -43,7 +43,7 @@ export async function readHadithPack<T>(id: HadithPackId): Promise<T | null> {
   try { return JSON.parse(await FileSystem.readAsStringAsync(record.uri)) as T; } catch { return null; }
 }
 
-export async function downloadHadithPack(id: HadithPackId, onProgress?: (ratio: number) => void): Promise<PackRecord> {
+export async function downloadHadithPack(id: HadithPackId, onProgress?: (ratio: number) => void, onTask?: (task: FileSystem.DownloadResumable) => void): Promise<PackRecord> {
   if (Platform.OS === "web") throw new Error("PACKS_NATIVE_ONLY");
   const source = trustedUrlOrNull(hadithPackCatalog[id].sourceUrl);
   if (!source) throw new Error("PACK_SOURCE_UNTRUSTED");
@@ -53,7 +53,9 @@ export async function downloadHadithPack(id: HadithPackId, onProgress?: (ratio: 
   const task = FileSystem.createDownloadResumable(source, uri, {}, (event) => {
     if (event.totalBytesExpectedToWrite > 0) onProgress?.(event.totalBytesWritten / event.totalBytesExpectedToWrite);
   });
-  const result = await task.downloadAsync();
+  onTask?.(task);
+  let result: FileSystem.FileSystemDownloadResult | undefined;
+  try { result = await task.downloadAsync(); } catch (error) { await FileSystem.deleteAsync(uri, { idempotent: true }); throw error; }
   const info = result?.uri ? await FileSystem.getInfoAsync(result.uri) : null;
   try {
     if (!result?.uri || !info?.exists || !info.size) throw new Error("PACK_DOWNLOAD_FAILED");
