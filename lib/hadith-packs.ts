@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system/legacy";
 import { Platform } from "react-native";
 
+import { assertValidDownload } from "@/lib/download-validation";
 import { trustedUrlOrNull } from "@/lib/security";
 
 export type HadithPackId = "bukhari" | "muslim";
@@ -33,7 +34,7 @@ export async function getHadithPack(id: HadithPackId): Promise<PackRecord | null
   const record = (await records())[id];
   if (!record) return null;
   const info = await FileSystem.getInfoAsync(record.uri);
-  return info.exists ? record : null;
+  return info.exists && !!info.size && info.size > 1024 ? record : null;
 }
 
 export async function readHadithPack<T>(id: HadithPackId): Promise<T | null> {
@@ -53,9 +54,12 @@ export async function downloadHadithPack(id: HadithPackId, onProgress?: (ratio: 
     if (event.totalBytesExpectedToWrite > 0) onProgress?.(event.totalBytesWritten / event.totalBytesExpectedToWrite);
   });
   const result = await task.downloadAsync();
-  if (!result?.uri) throw new Error("PACK_DOWNLOAD_FAILED");
-  const info = await FileSystem.getInfoAsync(result.uri);
-  if (!info.exists || !info.size) throw new Error("PACK_FILE_INVALID");
+  const info = result?.uri ? await FileSystem.getInfoAsync(result.uri) : null;
+  try {
+    if (!result?.uri || !info?.exists || !info.size) throw new Error("PACK_DOWNLOAD_FAILED");
+    assertValidDownload({ status: result.status, mimeType: result.mimeType, bytes: info.size, allowedMimeTypes: ["application/json", "text/json", "text/plain"], minBytes: 1024, code: "HADITH_PACK" });
+    JSON.parse(await FileSystem.readAsStringAsync(result.uri));
+  } catch (error) { if (result?.uri) await FileSystem.deleteAsync(result.uri, { idempotent: true }); throw error; }
   const record: PackRecord = { id, uri: result.uri, bytes: info.size, downloadedAt: new Date().toISOString(), sourceUrl: source };
   await saveRecords({ ...(await records()), [id]: record });
   return record;

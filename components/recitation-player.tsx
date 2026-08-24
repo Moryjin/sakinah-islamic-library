@@ -7,6 +7,7 @@ import { openSource } from "@/components/sakinah-ui";
 import type { RecitationMeta } from "@/data/sakinah-library";
 import { useColors } from "@/hooks/use-colors";
 import { downloadRecitation, getRecitationDownload, removeRecitationDownload } from "@/lib/audio-downloads";
+import { readableAudioDownloadError } from "@/lib/download-validation";
 
 const rtl = { textAlign: "right" as const, writingDirection: "rtl" as const };
 
@@ -22,6 +23,7 @@ export function RecitationPlayer({ recitations }: { recitations: RecitationMeta[
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const [downloadedUri, setDownloadedUri] = useState<string | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const recording = recitations[selected];
   const player = useAudioPlayer(null, { downloadFirst: true, updateInterval: 250 });
   const status = useAudioPlayerStatus(player);
@@ -63,7 +65,7 @@ export function RecitationPlayer({ recitations }: { recitations: RecitationMeta[
     }
   };
   const toggleDownload = async () => {
-    try { if (downloadedUri) { await removeRecitationDownload(recording); setDownloadedUri(null); return; } setDownloadProgress(0); const saved = await downloadRecitation(recording, setDownloadProgress); setDownloadedUri(saved.uri); } catch { Alert.alert("تعذر تنزيل التلاوة", "تحقق من الاتصال ثم أعد المحاولة."); } finally { setDownloadProgress(null); }
+    try { setDownloadError(null); if (downloadedUri) { await removeRecitationDownload(recording); setDownloadedUri(null); return; } setDownloadProgress(0); const saved = await downloadRecitation(recording, setDownloadProgress); setDownloadedUri(saved.uri); } catch (error) { const message = readableAudioDownloadError(error); setDownloadError(message); Alert.alert("تعذر تنزيل التلاوة", message); } finally { setDownloadProgress(null); }
   };
 
   return <View style={{ backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 22, padding: 16, marginBottom: 15 }}>
@@ -74,6 +76,7 @@ export function RecitationPlayer({ recitations }: { recitations: RecitationMeta[
     <Text style={{ color: colors.muted, fontSize: 12, lineHeight: 20, ...rtl }}>الرواية أو الأسلوب: {recording.riwayah}</Text>
     <Pressable onPress={togglePlayback} style={({ pressed }) => ({ backgroundColor: colors.primary, marginTop: 15, borderRadius: 16, minHeight: 48, flexDirection: "row-reverse", alignItems: "center", justifyContent: "center", gap: 8, opacity: pressed ? 0.72 : 1 })}><MaterialIcons name={status.playing ? "pause" : "play-arrow"} size={22} color="#FFFFFF" /><Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "800" }}>{status.playing ? "إيقاف مؤقت" : pendingPlay || !status.isLoaded ? "جار تجهيز التلاوة" : "تشغيل التلاوة"}</Text></Pressable>
     {Platform.OS !== "web" ? <Pressable onPress={toggleDownload} style={({ pressed }) => ({ marginTop: 9, borderWidth: 1, borderColor: downloadedUri ? colors.success : colors.border, borderRadius: 14, minHeight: 44, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.65 : 1 })}><Text style={{ color: downloadedUri ? colors.success : colors.primary, fontSize: 12, fontWeight: "800" }}>{downloadProgress !== null ? `جار التنزيل ${Math.round(downloadProgress * 100)}٪` : downloadedUri ? "محفوظ على الجهاز · اضغط للحذف" : "تنزيل للاستماع دون اتصال"}</Text></Pressable> : null}
+    {downloadError ? <Text style={{ color: colors.error, fontSize: 10, lineHeight: 17, marginTop: 7, ...rtl }}>{downloadError}</Text> : null}
     <Text style={{ color: colors.muted, fontSize: 10, marginTop: 8, ...rtl }}>يستمر التشغيل في الخلفية في النسخة المثبتة على الهاتف.</Text>
     {playbackError ? <Text style={{ color: colors.error, fontSize: 11, lineHeight: 18, marginTop: 8, ...rtl }}>{playbackError}</Text> : null}
     <View style={{ height: 4, borderRadius: 2, backgroundColor: colors.border, marginTop: 12, overflow: "hidden" }}><View style={{ width: `${progress}%`, height: "100%", backgroundColor: colors.primary }} /></View><View className="flex-row-reverse justify-between" style={{ marginTop: 5 }}><Text style={{ color: colors.muted, fontSize: 10 }}>{formatTime(status.currentTime)}</Text><Text style={{ color: colors.muted, fontSize: 10 }}>{formatTime(status.duration)}</Text></View>

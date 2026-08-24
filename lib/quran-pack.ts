@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system/legacy";
 import { Platform } from "react-native";
 
+import { assertValidDownload } from "@/lib/download-validation";
 import { trustedUrlOrNull } from "@/lib/security";
 
 const PACK_KEY = "sakinah.quran-pack.v1";
@@ -15,7 +16,7 @@ export async function getQuranPack(): Promise<PackRecord | null> {
     const record = JSON.parse((await AsyncStorage.getItem(PACK_KEY)) ?? "null") as PackRecord | null;
     if (!record) return null;
     const info = await FileSystem.getInfoAsync(record.uri);
-    return info.exists ? record : null;
+    return info.exists && !!info.size && info.size > 1024 ? record : null;
   } catch { return null; }
 }
 
@@ -33,9 +34,12 @@ export async function downloadQuranPack(onProgress?: (ratio: number) => void): P
     if (event.totalBytesExpectedToWrite > 0) onProgress?.(event.totalBytesWritten / event.totalBytesExpectedToWrite);
   });
   const result = await task.downloadAsync();
-  if (!result?.uri) throw new Error("QURAN_PACK_DOWNLOAD_FAILED");
-  const info = await FileSystem.getInfoAsync(result.uri);
-  if (!info.exists || !info.size) throw new Error("QURAN_PACK_INVALID");
+  const info = result?.uri ? await FileSystem.getInfoAsync(result.uri) : null;
+  try {
+    if (!result?.uri || !info?.exists || !info.size) throw new Error("QURAN_PACK_DOWNLOAD_FAILED");
+    assertValidDownload({ status: result.status, mimeType: result.mimeType, bytes: info.size, allowedMimeTypes: ["application/json", "text/json", "text/plain"], minBytes: 1024, code: "QURAN_PACK" });
+    JSON.parse(await FileSystem.readAsStringAsync(result.uri));
+  } catch (error) { if (result?.uri) await FileSystem.deleteAsync(result.uri, { idempotent: true }); throw error; }
   const record: PackRecord = { uri: result.uri, bytes: info.size, downloadedAt: new Date().toISOString(), sourceUrl: trustedSource };
   await AsyncStorage.setItem(PACK_KEY, JSON.stringify(record));
   return record;
